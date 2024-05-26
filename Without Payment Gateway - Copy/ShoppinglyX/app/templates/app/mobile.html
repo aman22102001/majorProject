@@ -1,0 +1,107 @@
+
+<!-- app/mobile_page.html -->
+{% extends 'app/base.html' %}
+{% block title %}Mobile{% endblock title %}
+{% block main-content %}
+
+
+
+
+
+
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="list-group">
+                <h4 class="list-group-item">Filter by Brand</h4>
+            
+                {% for b in brand %}
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input filter-checkbox" id="b{{ b.id }}" data-filter="b" name="b" value="{{ b.id }}">
+                        <!-- data filter means taking list  -->
+                        <label class="form-check-label" for="b{{ b.id }}">{{ b.name }}</label>
+                    </div>
+                {% endfor %}
+
+                <!-- price filter  -->
+                <h4 class="list-group-item mt-3">Filter by Price</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input filter-checkbox" id="between10000and15000" name="price" value="between10000and15000" data-filter="price">
+                    <label class="form-check-label" for="between10000and15000">Between 10000 and 15000</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input filter-checkbox" id="between20000and30000" name="price" value="between20000and30000" data-filter="price">
+                    <label class="form-check-label" for="between20000and30000">Between 20000 and 30000</label>
+                </div>
+
+                <!-- price filter end -->
+             
+            </div>
+        </div>
+        <div class="col-sm-8" id="mobileList">
+            <!-- change -->
+
+            <div class="row" id ='fc'>
+                <!-- imp id = fc -->
+                {% for mobile in mobiles %}
+                    <div class="col-sm-4 text-center mb-4" >
+                        <a href="{% url 'product-detail' mobile.id %}" class="btn">
+                            <div class="item">
+                                <img src="{{ mobile.image.url }}" alt="" height="300" class="">
+                                <div class="fw-bold">{{ mobile.bname.name }}</div>
+                                <div class="fw-bold">Rs. {{ mobile.selling_price }}</div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+
+
+
+            <!-- ok -->
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+    
+        $(".filter-checkbox").on('click', function(){
+            var filter_object={};
+            $(".filter-checkbox").each(function(index,ele){
+                var filter_value=$(this).val();
+                var filter_key=$(this).data('filter');
+                console.log(filter_key,filter_value);
+                filter_object[filter_key]=Array.from(document.querySelectorAll('input[data-filter='+filter_key+']:checked')).map(function(el){
+                     return el.value;
+                });
+            });
+    
+            $.ajax({
+                url:'{% url 'mobilef' %}',
+                data:filter_object,
+                dataType:'json',
+                success:function(res){
+                    console.log(res)
+                    $("#fc").html(res.data);
+                    var filter_value=$(this).val();
+                    var filter_key=$(this).data('filter');
+                }
+            });
+        });
+    });
+    </script>
+    
+
+
+
+{% endblock main-content %}
+
+
+
+
+
